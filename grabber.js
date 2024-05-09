@@ -8,6 +8,6 @@ function organizeTable(table) {
     var temp = "";
     for(let i = 0; i < table.length; i++) {
         temp += table.charAt(i);
-        if(temp == 'FLNS' || )
+        if(temp == 'FLNS' || temp)
     }
 }
