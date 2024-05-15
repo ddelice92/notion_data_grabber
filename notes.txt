@@ -1,0 +1,19 @@
+//use this to login
+/*
+import puppeteer from 'puppeteer';
+
+const browser = await puppeteer.launch({headless: false});
+const page = await browser.newPage();
+
+await page.goto('https://notion.so/login');
+await page.waitForSelector('#notion-email-input-2');
+var email = await page.$('#notion-email-input-2');
+await ');
+await page.keyboard.press('Enter');
+await page.waitForSelector('#notion-password-input-1');
+var password = await page.$('#notion-password-input-1');
+await password.type('');
+await page.keyboard.press('Enter');
+await page.waitForNavigation();
+await page.goto('');
+*/

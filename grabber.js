@@ -1,14 +1,13 @@
-import puppeteer from 'puppeteer';
+import * as cheerio from 'cheerio';
+import * as fs from 'fs';
 
-(async () => {
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
+const $ = cheerio.load(fs.readFileSync('(8) Bike Frame.html'));
+const tableOutput = $(".notion-table-view-cell span").text();
 
-    await page.goto('https://notion.so');
-
-    
-})();
-
-
-
-
+function organizeTable(table) {
+    var temp = "";
+    for(let i = 0; i < table.length; i++) {
+        temp += table.charAt(i);
+        if(temp == 'FLNS' || temp)
+    }
+}
