@@ -3,6 +3,5 @@
     "puppeteer": "^22.8.0",
     "puppeteer-core": "^22.7.0"
   },
-
   "type": "module"
 }

@@ -5,6 +5,8 @@ import puppeteer from 'puppeteer';
     const page = await browser.newPage();
 
     await page.goto('https://notion.so');
+
+    
 })();
 
 
