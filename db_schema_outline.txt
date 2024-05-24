@@ -1,0 +1,35 @@
+bike: (
+	uid text,
+	color text,
+	status text)
+	
+box: (
+	uid text,
+	quality int)
+	
+event: (
+	name text,
+	invoice int,
+	date_range text,
+	service text,
+	method text,
+	branded text,
+	bike_qty int,
+	bike_uid text)
+	
+ship_event: (
+	event_name text,
+	invoice int,
+	order int,
+	track_out text,
+	track_in text,
+	pickup text,
+	arrival text,
+	location_pickup text,
+	return_arrival text,
+	address text,
+	contact_name text,
+	contact_phone text,
+	contact_email text,
+	blender_qty int,
+	box_uid text)
