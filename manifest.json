@@ -4,15 +4,25 @@
     "description": "grab notion data",
     "version": "1.0",
 
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+
     "content_scripts": [
         {
             "matches": ["https://*/*"],
-            "js": ["background.js","jquery-3.7.1.min.js"],
+            "js": ["content.js", "jquery-3.7.1.min.js"],
             "run_at": "document_idle"
         }
     ],
     "permissions": ["activeTab", "scripting"],
+    "icons": {
+        "16": "grabber.png"
+    },
     "action": {
-        "default_icon": "grabber.png"
+        "default_icon":{
+            "16": "grabber.png"
+        }
     }
 }

@@ -8,12 +8,14 @@ const page = await browser.newPage();
 await page.goto('https://notion.so/login');
 await page.waitForSelector('#notion-email-input-2');
 var email = await page.$('#notion-email-input-2');
-await ');
+await email.type('EMAIL GOES HERE');
 await page.keyboard.press('Enter');
 await page.waitForSelector('#notion-password-input-1');
 var password = await page.$('#notion-password-input-1');
-await password.type('');
+await password.type('PASSWORD GOES HERE');
 await page.keyboard.press('Enter');
 await page.waitForNavigation();
-await page.goto('');
+await page.goto('FIRST PAGE GOES HERE');
 */
+
+showFilePicker is firing at wrong time and is caught in loop
