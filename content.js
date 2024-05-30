@@ -22,23 +22,40 @@ async function writeFile(fileHandle, contents) {
   await writable.close();
 }
 
-async function putInListener() {
+async function callWriteFile() {
   try {
     await console.log("WRITING TO FILE");
 
     var newHandle = await getNewFileHandle();
     await console.log("this is the new handle" + newHandle);
     await writeFile(newHandle, output);
-    await undoListener()
   }
   catch (err) {
     console.error(err.name, err.message);
   }
 }
 
+async function putInListener() {
+  try {
+    await console.log("WRITING TO FILE");
+
+    var newHandle = await getNewFileHandle();
+    await console.log("this is the new handle" + newHandle);
+    await writeFile(newHandle, output.toString());
+    await undoListener()
+  }
+  catch (err) {
+    await console.error(err.name, err.message);
+  }
+}
+
 function undoListener() {
   console.log("removing listener");
-  document.body.removeEventListener('click', putInListener());
+  document.body.removeEventListener('click', putInListener);
+}
+
+function callPutIn() {
+  putInListener();
 }
 
 chrome.runtime.onMessage.addListener(
@@ -50,32 +67,32 @@ chrome.runtime.onMessage.addListener(
       colMax = array.item(colMax + 1).getAttribute("data-col-index");
     }
     
-    //im counting something wrong, each item is being repeated 3 times
     for(let i = 0; i < array.length; i = i + 3) {
       temp = [];
 
-      if(i<array.length){
+      /*if(i<array.length){
         console.log("i: " + i + ";array length: " + array.length);
-      }
+      }*/
       
       for(let j = 0; j <= colMax; j++){
         
         if(array.item(i + j).innerText == "") {
-          temp.push("null");
+          temp.push("\"null\"");
         }
         else {
-          temp.push(array.item(i + j).innerText);
+          temp.push("\"" + array.item(i + j).innerText + "\"");
         }
       }
+
 
       output.push(temp);
     }
 
-    console.log("SENDING RESPONSE");
+    console.log("SENDING RESPONSE: " + output);
 
     sendResponse({output: output});
 
-    //document.body.addEventListener('click', putInListener());
+    document.body.addEventListener('click', putInListener);
 
 
 
