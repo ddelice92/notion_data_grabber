@@ -14,8 +14,7 @@ event: (
 	service text,
 	method text,
 	branded text,
-	bike_qty int,
-	bike_uid text)
+	bike_qty int)
 	
 ship_event: (
 	event_name text,
@@ -31,5 +30,10 @@ ship_event: (
 	contact_name text,
 	contact_phone text,
 	contact_email text,
-	blender_qty int,
-	box_uid text)
+	blender_qty int)
+
+event_inv: (
+	event_name text,
+	bike_uid text,
+	box_uid
+)

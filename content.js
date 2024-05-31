@@ -60,40 +60,43 @@ function callPutIn() {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    var array = document.getElementsByClassName("notion-table-view-cell");
-    var temp;
-    var colMax = -1;
-    while(colMax < array.item(colMax + 1).getAttribute("data-col-index")) {
-      colMax = array.item(colMax + 1).getAttribute("data-col-index");
+    if(document.getElementsByClassName("notion-calendar-view").length > 0) {
+      console.log("this is a calendar");
+      console.log(document.getElementsByClassName("notion-calendar-view"));
     }
-    
-    for(let i = 0; i < array.length; i = i + 3) {
-      temp = [];
-
-      /*if(i<array.length){
-        console.log("i: " + i + ";array length: " + array.length);
-      }*/
-      
-      for(let j = 0; j <= colMax; j++){
-        
-        if(array.item(i + j).innerText == "") {
-          temp.push("\"null\"");
-        }
-        else {
-          temp.push("\"" + array.item(i + j).innerText + "\"");
-        }
+    else if(document.getElementsByClassName("notion-table-view-cell").length > 0) {
+      var array = document.getElementsByClassName("notion-table-view-cell");
+      var temp;
+      var colMax = -1;
+      while(colMax < array.item(colMax + 1).getAttribute("data-col-index")) {
+        colMax = array.item(colMax + 1).getAttribute("data-col-index");
       }
-
-
-      output.push(temp);
+      
+      for(let i = 0; i < array.length; i = i + 3) {
+        temp = [];
+  
+        /*if(i<array.length){
+          console.log("i: " + i + ";array length: " + array.length);
+        }*/
+        
+        for(let j = 0; j <= colMax; j++){
+          
+          if(array.item(i + j).innerText == "") {
+            temp.push("\"null\"");
+          }
+          else {
+            temp.push("\"" + array.item(i + j).innerText + "\"");
+          }
+        }
+  
+  
+        output.push(temp);
+      }
+  
+      console.log("SENDING RESPONSE: " + output);
+  
+      sendResponse({output: output});
+  
+      document.body.addEventListener('click', putInListener);
     }
-
-    console.log("SENDING RESPONSE: " + output);
-
-    sendResponse({output: output});
-
-    document.body.addEventListener('click', putInListener);
-
-
-
 })
