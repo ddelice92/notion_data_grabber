@@ -1,4 +1,5 @@
 var output = [];
+var pageReady = "not-loaded";
 
 
 async function getNewFileHandle() {
@@ -54,16 +55,98 @@ function undoListener() {
   document.body.removeEventListener('click', putInListener);
 }
 
-function callPutIn() {
-  putInListener();
+function moreProperties(collection) {
+  console.log("this is moreProperties collection: " + collection);
+  const newCollection = collection.getElementsByTagName("div");
+  console.log("last item in newCollection: " + newCollection.item(newCollection.length - 1).innerText);
+
+  //look for hidden properties
+  if(/[0-9]+\smore\sproperties/.test(newCollection.item(newCollection.length - 1).innerText)) {
+    console.log("the collection has more properties");
+    newCollection.item(newCollection.length - 1).click();
+    newCollection = collection.getElementsByTagName("div");
+  }
+
+  var temp = [];
+  for(let i = 0; i < newCollection.length; i++) {
+    temp.push(newCollection.item(i).innerText);
+  }
+
+  return temp;
+}
+
+function printValue(value) {
+  var output = [];
+  console.log("this is value: " + value.item(1));
+
+  output.push(value.item(0).innerText);
+  output = output.concat(moreProperties(value.item(1)));
+
+  /*for(let i = 0; i < value.length; i++){
+    console.log(value.item(i).innerText);  
+  }*/
+  
+  pageReady = "loaded";
+  console.log("pageReady is " + pageReady);
+
+  return output;
 }
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+
+    var promiseTest = "promise not resolved";
+    //creates a Promise which waits half a second then resolves if notion-peek-renderer is found
+    function callWait() {
+      console.log("in callWait");
+      pageReady = "loading";
+      const wait = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if(document.getElementsByClassName("notion-peek-renderer").length > 0) {
+            promiseTest = "promise is being resolved";
+            //console.log(promiseTest);
+            //console.log(document.getElementsByClassName("layout-content"));
+            console.log("pageReady in callWait(): " + pageReady);
+
+            resolve(document.getElementsByClassName("layout-content"));
+          }
+          else {
+            console.log(promiseTest);
+            reject("page not peeking");
+          }
+        }, 500)
+      });
+
+      return wait;
+    }
+
+    //if grabbing from a calendar
     if(document.getElementsByClassName("notion-calendar-view").length > 0) {
       console.log("this is a calendar");
-      console.log(document.getElementsByClassName("notion-calendar-view"));
+      var array = document.getElementsByClassName("notion-collection-item");
+      array.item(0).getElementsByTagName("a").item(0).click();
+
+
+      var pageInfo;
+      while(pageReady == "not-loaded") {
+        
+        //console.log("entering while loop");
+        console.log("before callWait");
+        pageInfo = callWait().then(printValue);
+        console.log("after callWait");
+        //console.log("this is after wait");
+      }
+
+      while(pageReady != "loaded") {
+        console.log("page not loaded");
+        console.log(pageInfo);
+      }
+
+      console.log("page loaded and left while loop");
+      console.log(pageInfo);
+      
     }
+
     else if(document.getElementsByClassName("notion-table-view-cell").length > 0) {
       var array = document.getElementsByClassName("notion-table-view-cell");
       var temp;
@@ -99,4 +182,4 @@ chrome.runtime.onMessage.addListener(
   
       document.body.addEventListener('click', putInListener);
     }
-})
+});
