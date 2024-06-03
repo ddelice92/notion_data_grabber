@@ -18,6 +18,17 @@ await page.waitForNavigation();
 await page.goto('FIRST PAGE GOES HERE');
 */
 
-showFilePicker is firing at wrong time and is caught in loop
+getnextcell variable boolean
+indextoattribute variable int tells where in array to place data
 
-
+put all bikes in queue
+    all bikes with no event relations at front
+    rest are in order of date, with oldest dates first
+if no event
+    if color is different than bikes already in event
+        assign to event
+    else go to next bike
+else if date is more than 2 days apart from checking event
+    assign to event
+else if not checked whole list
+    go to next bike

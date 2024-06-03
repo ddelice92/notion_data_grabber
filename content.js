@@ -57,20 +57,53 @@ function undoListener() {
 
 function moreProperties(collection) {
   console.log("this is moreProperties collection: " + collection);
-  const newCollection = collection.getElementsByTagName("div");
+  var newCollection = collection.getElementsByTagName("div");
   console.log("last item in newCollection: " + newCollection.item(newCollection.length - 1).innerText);
 
-  //look for hidden properties
-  if(/[0-9]+\smore\sproperties/.test(newCollection.item(newCollection.length - 1).innerText)) {
-    console.log("the collection has more properties");
-    newCollection.item(newCollection.length - 1).click();
-    newCollection = collection.getElementsByTagName("div");
-  }
+  console.log(newCollection);
 
   var temp = [];
   for(let i = 0; i < newCollection.length; i++) {
     temp.push(newCollection.item(i).innerText);
   }
+  console.log("values in temp1");
+  console.log(temp);
+
+  var moreTest = false;
+
+  //look for hidden properties
+  if(/[0-9]+\smore\sproperties/.test(newCollection.item(newCollection.length - 1).innerText)) {
+    moreTest = true;
+    console.log("the collection has more properties");
+    newCollection.item(newCollection.length - 1).click();
+    var foundMore = document.getElementsByClassName("layout-content").item(1).getElementsByTagName("div");
+    console.log("after reassignment");
+    console.log(foundMore);
+  }
+
+  var change = [];
+
+  console.log(foundMore.item(8).getAttributeNames());
+  console.log(foundMore.item(8));
+
+  if(moreTest) {
+    for(let i = 0; i < foundMore.length; i++){
+      if(foundMore.item(i).getAttribute("role") == "cell") {
+        console.log("found role");
+        change.push(foundMore.item(i).innerText);
+      }
+    }
+    console.log("this is change");
+    console.log(change);
+  }
+
+
+  temp = [];
+  for(let i = 0; i < change.length; i++) {
+    temp.push(change[i]);
+  }
+  console.log("values in temp2");
+  console.log(temp);
 
   return temp;
 }
@@ -89,13 +122,15 @@ function printValue(value) {
   pageReady = "loaded";
   console.log("pageReady is " + pageReady);
 
-  return output;
+  console.log("pageInfo being assigned");
+  pageInfo = output;
+  console.log("pageInfo is :");
+  console.log(pageInfo);
 }
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
-    var promiseTest = "promise not resolved";
     //creates a Promise which waits half a second then resolves if notion-peek-renderer is found
     function callWait() {
       console.log("in callWait");
@@ -103,15 +138,9 @@ chrome.runtime.onMessage.addListener(
       const wait = new Promise((resolve, reject) => {
         setTimeout(() => {
           if(document.getElementsByClassName("notion-peek-renderer").length > 0) {
-            promiseTest = "promise is being resolved";
-            //console.log(promiseTest);
-            //console.log(document.getElementsByClassName("layout-content"));
-            console.log("pageReady in callWait(): " + pageReady);
-
             resolve(document.getElementsByClassName("layout-content"));
           }
           else {
-            console.log(promiseTest);
             reject("page not peeking");
           }
         }, 500)
@@ -130,23 +159,9 @@ chrome.runtime.onMessage.addListener(
       var pageInfo;
       while(pageReady == "not-loaded") {
         
-        //console.log("entering while loop");
-        console.log("before callWait");
-        pageInfo = callWait().then(printValue);
-        console.log("after callWait");
-        //console.log("this is after wait");
+        callWait().then(printValue);
       }
-
-      while(pageReady != "loaded") {
-        console.log("page not loaded");
-        console.log(pageInfo);
-      }
-
-      console.log("page loaded and left while loop");
-      console.log(pageInfo);
-      
     }
-
     else if(document.getElementsByClassName("notion-table-view-cell").length > 0) {
       var array = document.getElementsByClassName("notion-table-view-cell");
       var temp;
