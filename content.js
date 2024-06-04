@@ -1,6 +1,11 @@
 var output = [];
 var pageReady = "not-loaded";
-const eventProps = ["Job #", "Event Date", "Product", "Service Methods", "Bike QTY", "Bikes", "Contact Name", "Contact Phone", "Address"]
+const eventProps = ["Job #", "Event Date", "Product", "Service Methods", "Bike QTY", "Bikes", "Contact Name", "Contact Phone", "Address"];
+const observer = new MutationObserver(testfun);
+
+function testfun() {
+  console.log("**********TESTFUN HAS BEEN CALLED**********");
+}
 
 
 async function getNewFileHandle() {
@@ -68,15 +73,17 @@ function moreProperties(collection) {
   var moreTest = false;
   var foundMore;
 
-  function testfun() {
-    console.log("**********TESTFUN HAS BEEN CALLED**********");
-  }
+  console.log("before change");
+  console.log(document.getElementsByClassName("layout-content").item(1));
+
 
   //look for hidden properties
   if(/[0-9]+\smore\sproperties/.test(newCollection.item(newCollection.length - 1).innerText)) {
     moreTest = true;
     console.log("the collection has more properties");
-    document.addEventListener("load", testfun);
+    observer.observe(document.getElementsByClassName("layout-content").item(1), {
+      childList: true
+    });
     newCollection.item(newCollection.length - 1).click();
     
     foundMore = document.getElementsByClassName("layout-content").item(1).getElementsByTagName("div");
