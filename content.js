@@ -82,7 +82,9 @@ function moreProperties(collection) {
     moreTest = true;
     console.log("the collection has more properties");
     observer.observe(document.getElementsByClassName("layout-content").item(1), {
-      childList: true
+      childList: true,
+      characterData: true,
+      subtree: true
     });
     newCollection.item(newCollection.length - 1).click();
     
