@@ -1,5 +1,6 @@
 var output = [];
 var pageReady = "not-loaded";
+const eventProps = ["Job #", "Event Date", "Product", "Service Methods", "Bike QTY", "Bikes", "Contact Name", "Contact Phone", "Address"]
 
 
 async function getNewFileHandle() {
@@ -55,55 +56,50 @@ function undoListener() {
   document.body.removeEventListener('click', putInListener);
 }
 
+//finds if more properties need to be loaded on enwly rendered page
 function moreProperties(collection) {
-  console.log("this is moreProperties collection: " + collection);
   var newCollection = collection.getElementsByTagName("div");
-  console.log("last item in newCollection: " + newCollection.item(newCollection.length - 1).innerText);
-
-  console.log(newCollection);
 
   var temp = [];
   for(let i = 0; i < newCollection.length; i++) {
     temp.push(newCollection.item(i).innerText);
   }
-  console.log("values in temp1");
-  console.log(temp);
 
   var moreTest = false;
+  var foundMore;
+
+  function testfun() {
+    console.log("**********TESTFUN HAS BEEN CALLED**********");
+  }
 
   //look for hidden properties
   if(/[0-9]+\smore\sproperties/.test(newCollection.item(newCollection.length - 1).innerText)) {
     moreTest = true;
     console.log("the collection has more properties");
+    document.addEventListener("load", testfun);
     newCollection.item(newCollection.length - 1).click();
-    var foundMore = document.getElementsByClassName("layout-content").item(1).getElementsByTagName("div");
-    console.log("after reassignment");
-    console.log(foundMore);
+    
+    foundMore = document.getElementsByClassName("layout-content").item(1).getElementsByTagName("div");
+    //console.log(foundMore);
   }
 
   var change = [];
 
-  console.log(foundMore.item(8).getAttributeNames());
-  console.log(foundMore.item(8));
+  /*console.log("this is document stuff");
+  console.log(document.getElementsByClassName("layout-content").item(1));
+  console.log("this is foundMore");
+  console.log(foundMore);*/
 
   if(moreTest) {
     for(let i = 0; i < foundMore.length; i++){
       if(foundMore.item(i).getAttribute("role") == "cell") {
-        console.log("found role");
         change.push(foundMore.item(i).innerText);
+        console.log(foundMore.item(i).innerText);
+        console.log(foundMore.item(i).getAttributeNames());
+        console.log(foundMore.item(i).getAttribute("role"));
       }
     }
-    console.log("this is change");
-    console.log(change);
   }
-
-
-  temp = [];
-  for(let i = 0; i < change.length; i++) {
-    temp.push(change[i]);
-  }
-  console.log("values in temp2");
-  console.log(temp);
 
   return temp;
 }
