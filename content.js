@@ -1,7 +1,11 @@
 var output = [];
 var pageReady = "not-loaded";
-const eventProps = ["Job #", "Event Date", "Product", "Service Methods", "Bike QTY", "Bikes", "Contact Name", "Contact Phone", "Address"];
-const observer = new MutationObserver(testfun);
+const eventProps = ["Job #", "Event Date", "Product", "Service Methods", "Custom Work", "Bike QTY", "Bikes", "Contact Name", "Contact Phone", "Address"];
+var grabNext = false;
+var seekMore = false;
+var foundMore;
+var moreTest = false;
+var tempOutput = [];
 
 function testfun() {
   console.log("**********TESTFUN HAS BEEN CALLED**********");
@@ -29,7 +33,7 @@ async function writeFile(fileHandle, contents) {
   await writable.close();
 }
 
-async function callWriteFile() {
+/*async function callWriteFile() {
   try {
     await console.log("WRITING TO FILE");
 
@@ -40,7 +44,7 @@ async function callWriteFile() {
   catch (err) {
     console.error(err.name, err.message);
   }
-}
+}*/
 
 async function putInListener() {
   try {
@@ -61,51 +65,91 @@ function undoListener() {
   document.body.removeEventListener('click', putInListener);
 }
 
-//finds if more properties need to be loaded on enwly rendered page
+//finds if more properties need to be loaded on newly rendered page
 function moreProperties(collection) {
-  var newCollection = collection.getElementsByTagName("div");
+  var newCollection = collection.item(1).getElementsByTagName("div");
 
+  //fix this so it only grabs each unique text once
   var temp = [];
   for(let i = 0; i < newCollection.length; i++) {
     temp.push(newCollection.item(i).innerText);
   }
 
-  var moreTest = false;
-  var foundMore;
-
-  console.log("before change");
-  console.log(document.getElementsByClassName("layout-content").item(1));
-
-
   //look for hidden properties
   if(/[0-9]+\smore\sproperties/.test(newCollection.item(newCollection.length - 1).innerText)) {
     moreTest = true;
-    console.log("the collection has more properties");
+    temp = [];
+    
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((mutationList) => {
+        console.log("*****A CHANGE TO THE DIV HAS BEEN MADE*****");
+        observer.disconnect();
+  
+        var title = collection.item(0).getElementsByClassName("notion-selectable").item(0).innerText;
+        temp.push(title);
+        console.log(title);
+        for(let i = 0; i < newCollection.length; i++) {
+          if(newCollection.item(i).getAttribute("role") == "cell") {
+            temp.push(newCollection.item(i).innerText);
+          }
+        }
+  
+        resolve(temp);
+      });
+  
+      observer.observe(document.getElementsByClassName("layout-content").item(1), {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+      newCollection.item(newCollection.length - 1).click();
+    });
+    
+  }
+  else {
+    console.log("COLLECTION DID NOT HAVE MORE PROPERTIES");
+    return new Promise((resolve) => {
+      resolve(temp);
+    });
+  }
+}
+
+function changeFoundMore(newCollection) {
+  return new Promise((resolve) => {
+    const observer = new MutationObserver((mutationList) => {
+      console.log("*****A CHANGE TO THE DIV HAS BEEN MADE*****");
+      for(let i = 0; i < mutationList.length; i++) {
+        console.log("MUTATION " + i);
+        console.log(mutationList[i]);
+      }
+      observer.disconnect();
+
+      var temp = [];
+      for(let i = 0; i < newCollection.length; i++) {
+        temp.push(newCollection.item(i).innerText);
+      }
+
+      resolve(temp);
+    });
+
     observer.observe(document.getElementsByClassName("layout-content").item(1), {
       childList: true,
       characterData: true,
       subtree: true
     });
     newCollection.item(newCollection.length - 1).click();
-    
-    foundMore = document.getElementsByClassName("layout-content").item(1).getElementsByTagName("div");
-    //console.log(foundMore);
-  }
+  })
+}
 
-  var change = [];
-
-  /*console.log("this is document stuff");
-  console.log(document.getElementsByClassName("layout-content").item(1));
-  console.log("this is foundMore");
-  console.log(foundMore);*/
-
-  if(moreTest) {
-    for(let i = 0; i < foundMore.length; i++){
-      if(foundMore.item(i).getAttribute("role") == "cell") {
-        change.push(foundMore.item(i).innerText);
-        console.log(foundMore.item(i).innerText);
-        console.log(foundMore.item(i).getAttributeNames());
-        console.log(foundMore.item(i).getAttribute("role"));
+//pull needed info
+function findProps(value) {
+  var temp = Array(eventProps.length);
+  //iterate through all strings grabbed
+  for(let i = 0; i < value.length; i++) {
+    //iterate through list of event properties
+    for(let j = 0; j < eventProps.length; j++) {
+      if(value[i] == eventProps[j]) {
+        temp[j] = value[i+1];
       }
     }
   }
@@ -113,22 +157,13 @@ function moreProperties(collection) {
   return temp;
 }
 
+//save this to test what is being output
 function printValue(value) {
-  var output = [];
-  console.log("this is value: " + value.item(1));
-
-  output.push(value.item(0).innerText);
-  output = output.concat(moreProperties(value.item(1)));
-
-  /*for(let i = 0; i < value.length; i++){
-    console.log(value.item(i).innerText);  
-  }*/
-  
   pageReady = "loaded";
   console.log("pageReady is " + pageReady);
 
   console.log("pageInfo being assigned");
-  pageInfo = output;
+  pageInfo = findProps(value);
   console.log("pageInfo is :");
   console.log(pageInfo);
 }
@@ -164,7 +199,7 @@ chrome.runtime.onMessage.addListener(
       var pageInfo;
       while(pageReady == "not-loaded") {
         
-        callWait().then(printValue);
+        callWait().then(moreProperties).then(printValue);
       }
     }
     else if(document.getElementsByClassName("notion-table-view-cell").length > 0) {
@@ -177,10 +212,6 @@ chrome.runtime.onMessage.addListener(
       
       for(let i = 0; i < array.length; i = i + 3) {
         temp = [];
-  
-        /*if(i<array.length){
-          console.log("i: " + i + ";array length: " + array.length);
-        }*/
         
         for(let j = 0; j <= colMax; j++){
           
