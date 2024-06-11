@@ -333,6 +333,7 @@ chrome.runtime.onMessage.addListener(
         colMax = array.item(colMax + 1).getAttribute("data-col-index");
       }
       
+      //make this outupt look like event output
       //pull each cell into arrays separated by row and push each array into final output
       for(let i = 0; i < array.length; i = i + 3) {
         temp = [];

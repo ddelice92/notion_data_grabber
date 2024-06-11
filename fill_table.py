@@ -1,8 +1,14 @@
 import sqlite3
 import re
 
+print("enter read file")
+inputFile = input()
+
+print("enter table name")
+table = input()
+
 #create file object and read file contents into variable
-f = open("a", "r")
+f = open(inputFile, "r")
 text = f.read()
 
 #turn string list into proper list
@@ -30,10 +36,8 @@ print(output)
 
 connect = sqlite3.connect("bike_power.db")
 cursor = connect.cursor()
-for x in output:
-    print(x[0] + x[1] + x[2])
-    cursor.execute('''INSERT OR REPLACE INTO bike
-               VALUES ( ''' + x[0] + ''',''' + x[1] + ''',''' + x[2] + ''')''')
+cursor.executemany('''INSERT OR REPLACE INTO ''' + table +
+               ''' VALUES (%s, %s, %s)''', output)
 print("table filled")
 
 connect.commit()

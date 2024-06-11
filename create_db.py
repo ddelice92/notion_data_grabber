@@ -3,17 +3,17 @@ connect = sqlite3.connect("bike_power.db")
 
 cursor = connect.cursor()
 
-cursor.execute('''CREATE TABLE bike
+cursor.execute('''CREATE TABLE IF NOT EXISTS bike
                         (	UID TEXT PRIMARY KEY NOT NULL,
 	                        COLOR TEXT,
 	                        STATUS TEXT)''')
 
-cursor.execute('''CREATE TABLE box 
+cursor.execute('''CREATE TABLE IF NOT EXISTS box 
                         (UID TEXT PRIMARY KEY NOT NULL,
                         QUALITY INT)''')
 
-cursor.execute('''CREATE TABLE event
-                        (NAME TEXT PRIMARY KEY,
+cursor.execute('''CREATE TABLE IF NOT EXISTS event
+                        (NAME TEXT,
 	                    INVOICE INT,
 	                    DATE_RANGE TEXT,
 	                    SERVICE TEXT,
@@ -22,7 +22,7 @@ cursor.execute('''CREATE TABLE event
 	                    BIKE_QTY INT,
 	                    BIKE_UID TEXT)''')
 
-cursor.execute('''CREATE TABLE ship_event
+cursor.execute('''CREATE TABLE IF NOT EXISTS ship_event
                         (EVENT_NAME TEXT,
 	                    INVOICE INT,
 	                    ORDER INT,
@@ -38,3 +38,8 @@ cursor.execute('''CREATE TABLE ship_event
 	                    CONTACT_EMAIL TEXT,
 	                    BLENDER_QTY INT,
 	                    BOX_UID TEXT)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS event-bike
+               			(EVENT_NAME TEXT,
+               			INVOICE INT,
+               			BIKE_ID TEXT)''')
