@@ -1,6 +1,7 @@
 import sqlite3
 import re
 
+
 print("enter read file")
 inputFile = input()
 
@@ -23,21 +24,24 @@ output = []
 for x in range(len(temp)):
     if ((count % colMax) == 2):
         #tempArray.append(temp[x][1:len(temp[x])-1])
-        tempArray.append(temp[x])
+        tempArray.append(temp[x].replace('"', ''))
         output.append(tempArray)
         tempArray = []
     else:
         #tempArray.append(temp[x][1:len(temp[x])-1])
-        tempArray.append(temp[x])
+        tempArray.append(temp[x].replace('"', ''))
     
     count += 1
 print(output)
+print("*******************************************************")
 
 
 connect = sqlite3.connect("bike_power.db")
 cursor = connect.cursor()
 cursor.executemany('''INSERT OR REPLACE INTO ''' + table +
-               ''' VALUES (%s, %s, %s)''', output)
+               ''' VALUES (?, ?, ?)''', output)
 print("table filled")
+cursor.execute('''SELECT * FROM ''' + table)
+print(cursor.fetchall())
 
 connect.commit()
